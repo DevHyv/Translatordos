@@ -24,11 +24,16 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Preparar carpeta web
+        run: |
+          mkdir www
+          cp index.html www/
+
       - name: Compilar APK con Capacitor
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "Transpositor" "com.transpositor.app" --web-dir .
+          npx cap init "Transpositor" "com.transpositor.app" --web-dir www
           npx cap add android
           npx cap copy android
           cd android
