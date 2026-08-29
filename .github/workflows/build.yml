@@ -13,44 +13,33 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Preparar Java 17
+      - name: Configurar Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Preparar Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Construir y Compilar
+      - name: Construir y Compilar APK
         run: |
-          # 1. Crear carpeta web
           mkdir -p www
           cp index.html www/
-          
-          # 2. Iniciar proyecto Node
           npm init -y
-          
-          # 3. Instalar Capacitor (ultima version estable)
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          
-          # 4. Inicializar app y agregar plataforma Android
+          npm install @capacitor/core@5.7.5 @capacitor/cli@5.7.5 @capacitor/android@5.7.5
           npx cap init "Transpositor" "com.transpositor.app" --web-dir www
           npx cap add android
-          
-          # 5. Sincronizar archivos correctamente
           npx cap sync android
-          
-          # 6. Compilar el APK
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
-          
+
       - name: Entregar APK
         uses: actions/upload-artifact@v4
         with:
           name: Transpositor-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          
+          path: android/app/build/outputs/apk/debug/app-debug.apk        
